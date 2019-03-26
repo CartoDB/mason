@@ -2,16 +2,21 @@ set -eu
 set -o pipefail
 # set -x
 
+<<<<<<< HEAD
 export MASON_ROOT=${MASON_ROOT:-`pwd`/mason_packages}
 MASON_BUCKET=${MASON_BUCKET:-mapnik-carto}
 MASON_UPSTREAM_BUCKET=${MASON_UPSTREAM_BUCKET:-mason-binaries}
+=======
+export MASON_ROOT=${MASON_ROOT:-$(pwd)/mason_packages}
+MASON_BUCKET=${MASON_BUCKET:-mason-binaries}
+>>>>>>> blessed/master
 MASON_IGNORE_OSX_SDK=${MASON_IGNORE_OSX_SDK:-false}
 
-MASON_UNAME=`uname -s`
-if [ ${MASON_UNAME} = 'Darwin' ]; then
+MASON_UNAME=$(uname -s)
+if [ "${MASON_UNAME}" = 'Darwin' ]; then
     MASON_PLATFORM=${MASON_PLATFORM:-osx}
-    MASON_XCODE_ROOT=`"xcode-select" -p`
-elif [ ${MASON_UNAME} = 'Linux' ]; then
+    MASON_XCODE_ROOT=$("xcode-select" -p)
+elif [ "${MASON_UNAME}" = 'Linux' ]; then
     MASON_PLATFORM=${MASON_PLATFORM:-linux}
 fi
 
@@ -23,8 +28,8 @@ case $- in
 esac
 
 case ${MASON_UNAME} in
-    'Darwin')    MASON_CONCURRENCY=`sysctl -n hw.ncpu` ;;
-    'Linux')        MASON_CONCURRENCY=$(lscpu -p | egrep -v '^#' | wc -l) ;;
+    'Darwin')    MASON_CONCURRENCY=$(sysctl -n hw.ncpu) ;;
+    'Linux')        MASON_CONCURRENCY=$(nproc) ;;
     *)              MASON_CONCURRENCY=1 ;;
 esac
 
@@ -38,12 +43,12 @@ case ${MASON_ROOT} in
     *\ * ) mason_error "Directory '${MASON_ROOT} contains spaces."; exit ;;
 esac
 
-if [ ${MASON_PLATFORM} = 'osx' ]; then
+if [ "${MASON_PLATFORM}" = 'osx' ]; then
     export MASON_HOST_ARG="--host=x86_64-apple-darwin"
-    export MASON_PLATFORM_VERSION=`uname -m`
+    export MASON_PLATFORM_VERSION=$(uname -m)
 
     if [[ ${MASON_IGNORE_OSX_SDK} == false ]]; then
-        MASON_SDK_VERSION=`xcrun --sdk macosx --show-sdk-version`
+        MASON_SDK_VERSION=$(xcrun --sdk macosx --show-sdk-version)
         if [[ ! ${MASON_SDK_VERSION} ]]; then
             mason_error "The command 'xcrun --sdk macosx --show-sdk-version' returned nothing. Is your xcode environment setup correctly?"
             exit 1
@@ -73,11 +78,11 @@ if [ ${MASON_PLATFORM} = 'osx' ]; then
         export CC="/usr/bin/clang"
     fi
 
-elif [ ${MASON_PLATFORM} = 'ios' ]; then
+elif [ "${MASON_PLATFORM}" = 'ios' ]; then
     export MASON_HOST_ARG="--host=arm-apple-darwin"
     export MASON_PLATFORM_VERSION="8.0" # Deployment target version
 
-    MASON_SDK_VERSION=`xcrun --sdk iphoneos --show-sdk-version`
+    MASON_SDK_VERSION=$(xcrun --sdk iphoneos --show-sdk-version)
     if [[ ! ${MASON_SDK_VERSION} ]]; then
         mason_error "The command 'xcrun --sdk iphoneos --show-sdk-version' returned nothing. Is your xcode environment setup correctly?"
         exit 1
@@ -94,7 +99,7 @@ elif [ ${MASON_PLATFORM} = 'ios' ]; then
         export MASON_DYNLIB_SUFFIX="dylib"
     fi
 
-    if [ `xcrun --sdk iphonesimulator --show-sdk-version` != ${MASON_SDK_VERSION} ]; then
+    if [ "$(xcrun --sdk iphonesimulator --show-sdk-version)" != "${MASON_SDK_VERSION}" ]; then
         mason_error "iPhone Simulator SDK version doesn't match iPhone SDK version"
         exit 1
     fi
@@ -103,7 +108,7 @@ elif [ ${MASON_PLATFORM} = 'ios' ]; then
     MASON_SDK_PATH="${MASON_SDK_ROOT}/SDKs/iPhoneSimulator${MASON_SDK_VERSION}.sdk"
     export MASON_ISIM_CFLAGS="${MIN_SDK_VERSION_FLAG} -isysroot ${MASON_SDK_PATH}"
 
-elif [ ${MASON_PLATFORM} = 'linux' ]; then
+elif [ "${MASON_PLATFORM}" = 'linux' ]; then
 
     export MASON_DYNLIB_SUFFIX="so"
 
@@ -116,7 +121,7 @@ elif [ ${MASON_PLATFORM} = 'linux' ]; then
     export LDFLAGS=""
     export CXXFLAGS="${CFLAGS} -std=c++11"
 
-    if [ $(uname -m) != ${MASON_PLATFORM_VERSION} ] ; then
+    if [ "$(uname -m)" != "${MASON_PLATFORM_VERSION}" ] ; then
         # Install the cross compiler
         MASON_XC_PACKAGE_NAME=gcc
         MASON_XC_PACKAGE_VERSION=${MASON_XC_GCC_VERSION:-5.3.0}-${MASON_PLATFORM_VERSION}
@@ -129,18 +134,18 @@ elif [ ${MASON_PLATFORM} = 'linux' ]; then
 
         # Load toolchain specific variables
         if [[ ! ${MASON_XC_ROOT} =~ ".build" ]] && [ -f ${MASON_XC_ROOT}/toolchain.sh ] ; then
-            source ${MASON_XC_ROOT}/toolchain.sh
+            source "${MASON_XC_ROOT}/toolchain.sh"
         fi
     fi
 
-elif [ ${MASON_PLATFORM} = 'android' ]; then
+elif [ "${MASON_PLATFORM}" = 'android' ]; then
     case "${MASON_PLATFORM_VERSION:-}" in
-        arm-v5-9) export MASON_ANDROID_ABI=arm-v5 ;;
-        arm-v7-9) export MASON_ANDROID_ABI=arm-v7 ;;
+        arm-v5-14) export MASON_ANDROID_ABI=arm-v5 ;;
+        arm-v7-14) export MASON_ANDROID_ABI=arm-v7 ;;
         arm-v8-21) export MASON_ANDROID_ABI=arm-v8 ;;
-        x86-9) export MASON_ANDROID_ABI=x86 ;;
+        x86-14) export MASON_ANDROID_ABI=x86 ;;
         x86-64-21) export MASON_ANDROID_ABI=x86-64 ;;
-        mips-9) export MASON_ANDROID_ABI=mips ;;
+        mips-14) export MASON_ANDROID_ABI=mips ;;
         mips64-21) export MASON_ANDROID_ABI=mips64 ;;
         *) export MASON_ANDROID_ABI=${MASON_ANDROID_ABI:-arm-v7}
     esac
@@ -168,7 +173,7 @@ elif [ ${MASON_PLATFORM} = 'android' ]; then
 
         export JNIDIR="armeabi-v7a"
         MASON_ANDROID_ARCH="arm"
-        MASON_ANDROID_PLATFORM="9"
+        MASON_ANDROID_PLATFORM="14"
 
     elif [ ${MASON_ANDROID_ABI} = 'arm-v5' ]; then
         MASON_ANDROID_TOOLCHAIN="arm-linux-androideabi"
@@ -179,7 +184,7 @@ elif [ ${MASON_PLATFORM} = 'android' ]; then
 
         export JNIDIR="armeabi"
         MASON_ANDROID_ARCH="arm"
-        MASON_ANDROID_PLATFORM="9"
+        MASON_ANDROID_PLATFORM="14"
 
     elif [ ${MASON_ANDROID_ABI} = 'x86' ]; then
         MASON_ANDROID_TOOLCHAIN="i686-linux-android"
@@ -189,7 +194,7 @@ elif [ ${MASON_PLATFORM} = 'android' ]; then
 
         export JNIDIR="x86"
         MASON_ANDROID_ARCH="x86"
-        MASON_ANDROID_PLATFORM="9"
+        MASON_ANDROID_PLATFORM="14"
 
     elif [ ${MASON_ANDROID_ABI} = 'x86-64' ]; then
         MASON_ANDROID_TOOLCHAIN="x86_64-linux-android"
@@ -209,13 +214,13 @@ elif [ ${MASON_PLATFORM} = 'android' ]; then
 
         export JNIDIR="mips"
         MASON_ANDROID_ARCH="mips"
-        MASON_ANDROID_PLATFORM="9"
+        MASON_ANDROID_PLATFORM="14"
 
     elif [ ${MASON_ANDROID_ABI} = 'mips-64' ]; then
         MASON_ANDROID_TOOLCHAIN="mips64el-linux-android"
         export MASON_HOST_ARG="--host=${MASON_ANDROID_TOOLCHAIN}"
 
-        CFLAGS="-target mips64el-none-linux-android ${CFLAGS}"
+        CFLAGS="-target mips64el-none-linux-android ${CFLAGS} -fintegrated-as"
 
         export JNIDIR="mips64"
         MASON_ANDROID_ARCH="mips64"
@@ -227,9 +232,9 @@ elif [ ${MASON_PLATFORM} = 'android' ]; then
     MASON_API_LEVEL=${MASON_API_LEVEL:-android-$MASON_ANDROID_PLATFORM}
 
     # Installs the native SDK
-    export MASON_NDK_PACKAGE_VERSION=${MASON_ANDROID_ARCH}-${MASON_ANDROID_PLATFORM}-r13b
+    export MASON_NDK_PACKAGE_VERSION=${MASON_ANDROID_ARCH}-${MASON_ANDROID_PLATFORM}-r16b
     MASON_SDK_ROOT=$(MASON_PLATFORM= MASON_PLATFORM_VERSION= ${MASON_DIR}/mason prefix android-ndk ${MASON_NDK_PACKAGE_VERSION})
-    if [ ! -d ${MASON_SDK_ROOT} ] ; then
+    if [ ! -d "${MASON_SDK_ROOT}" ] ; then
         MASON_PLATFORM= MASON_PLATFORM_VERSION= ${MASON_DIR}/mason install android-ndk ${MASON_NDK_PACKAGE_VERSION}
     fi
     MASON_SDK_PATH="${MASON_SDK_ROOT}/sysroot"
@@ -269,12 +274,12 @@ MASON_BINARIES_PATH=${MASON_ROOT}/.binaries/${MASON_BINARIES}
 
 function mason_check_existing {
     # skip installing if it already exists
-    if [ ${MASON_HEADER_ONLY:-false} = true ] ; then
+    if [ "${MASON_HEADER_ONLY:-false}" = true ] ; then
         if [ -d "${MASON_PREFIX}" ] ; then
             mason_success "Already installed at ${MASON_PREFIX}"
             exit 0
         fi
-    elif [ ${MASON_SYSTEM_PACKAGE:-false} = true ]; then
+    elif [ "${MASON_SYSTEM_PACKAGE:-false}" = true ]; then
         if [ -f "${MASON_PREFIX}/version" ] ; then
             mason_success "Using system-provided ${MASON_NAME} $(set -e;mason_system_version)"
             exit 0
@@ -290,11 +295,11 @@ function mason_check_existing {
 
 function mason_check_installed {
     # skip installing if it already exists
-    if [ ${MASON_HEADER_ONLY:-false} = true ] ; then
+    if [ "${MASON_HEADER_ONLY:-false}" = true ] ; then
         if [ -d "${MASON_PREFIX}" ] ; then
             return 0
         fi
-    elif [ ${MASON_SYSTEM_PACKAGE:-false} = true ]; then
+    elif [ "${MASON_SYSTEM_PACKAGE:-false}" = true ]; then
         if [ -f "${MASON_PREFIX}/version" ] ; then
             return 0
         fi
@@ -317,17 +322,17 @@ function mason_clear_existing {
 function mason_download {
     mkdir -p "${MASON_ROOT}/.cache"
     cd "${MASON_ROOT}/.cache"
-    if [ ! -f ${MASON_SLUG} ] ; then
+    if [ ! -f "${MASON_SLUG}" ] ; then
         mason_step "Downloading $1..."
         local CURL_RESULT=0
-        curl --retry 3 ${MASON_CURL_ARGS} -f -S -L "$1" -o ${MASON_SLUG}  || CURL_RESULT=$?
+        curl --retry 3 ${MASON_CURL_ARGS} -f -S -L "$1" -o "${MASON_SLUG}"  || CURL_RESULT=$?
         if [[ ${CURL_RESULT} != 0 ]]; then
             mason_error "Failed to download ${1} (returncode: $CURL_RESULT)"
             exit $CURL_RESULT
         fi
     fi
 
-    MASON_HASH=`git hash-object ${MASON_SLUG}`
+    MASON_HASH=$(git hash-object "${MASON_SLUG}")
     if [ "$2" != "${MASON_HASH}" ] ; then
         mason_error "Hash ${MASON_HASH} of file ${MASON_ROOT}/.cache/${MASON_SLUG} doesn't match $2"
         exit 1
@@ -342,17 +347,17 @@ function mason_setup_build_dir {
 
 function mason_extract_tar_gz {
     mason_setup_build_dir
-    tar xzf ../.cache/${MASON_SLUG} $@
+    tar xzf "../.cache/${MASON_SLUG}" $@
 }
 
 function mason_extract_tar_bz2 {
     mason_setup_build_dir
-    tar xjf ../.cache/${MASON_SLUG} $@
+    tar xjf "../.cache/${MASON_SLUG}" $@
 }
 
 function mason_extract_tar_xz {
     mason_setup_build_dir
-    tar xJf ../.cache/${MASON_SLUG} $@
+    tar xJf "../.cache/${MASON_SLUG}" $@
 }
 
 function mason_prepare_compile {
@@ -369,24 +374,34 @@ function mason_clean {
 }
 
 function bash_lndir() {
-    oldifs=$IFS
-    IFS='
-    '
-    src=$(cd "$1" ; pwd)
-    dst=$(cd "$2" ; pwd)
-    find "$src" -type d |
-    while read dir; do
-            mkdir -p "$dst${dir#$src}"
-    done
+    local src dst
+    src=$(cd -- "$1" && pwd)
+    dst=$(cd -- "$2" && pwd)
 
-    find "$src" -type f -o -type l |
-    while read src_f; do
-            dst_f="$dst${src_f#$src}"
-            if [[ ! -e $dst_f ]]; then
-                ln -s "$src_f" "$dst_f"
-            fi
-    done
-    IFS=$oldifs
+    find "$src" -mindepth 1 -type d -exec \
+        /usr/bin/env src="$src" dst="$dst" bash -c \
+        '
+            mkdir -p -- "${@/#"$src"/$dst}"
+            for src_dir
+            do
+                dst_dir="${src_dir/#"$src"/$dst}"
+                export dst_dir
+
+                # OSX ln does not support -t (--target-directory),
+                # that is why -exec sh -c "ln -sf -- files... dir"
+                # is used instead of -exec ln -sft dir files...
+
+                find "$src_dir" -maxdepth 1 \
+                    \( -type f -o -type l \) \
+                    \! -name "*~" \
+                    -exec /bin/sh -c \
+                    "
+                        ln -sf -- \"\$@\" \"\$dst_dir/\"
+
+                    " sh_lnfiles "{""}" +
+            done
+
+        ' bash_lndir '{}' +
 }
 
 
@@ -395,12 +410,18 @@ function run_lndir() {
     #/bin/cp -R -n ${MASON_PREFIX}/* ${TARGET_SUBDIR}
     mason_step "Linking ${MASON_PREFIX}"
     mason_step "Links will be inside ${TARGET_SUBDIR}"
-    if hash lndir 2>/dev/null; then
-        mason_substep "Using $(which lndir) for symlinking"
-        lndir -silent ${MASON_PREFIX}/ ${TARGET_SUBDIR} 2>/dev/null
+    local cp_help=$(cp --help 2>/dev/null)
+    if [[ $cp_help =~ [[:space:]]--symbolic-link[[:space:]] &&
+          $cp_help =~ [[:space:]]--target-directory= ]]
+    then
+        mason_substep "Using 'cp' for symlinking"
+        find "${MASON_PREFIX}" -mindepth 1 -type d -prune -exec \
+            cp -RPfp --symbolic-link \
+                --target-directory="${TARGET_SUBDIR}" \
+                -- '{}' +
     else
-        mason_substep "Using bash fallback for symlinking (install lndir for faster symlinking)"
-        bash_lndir ${MASON_PREFIX}/ ${TARGET_SUBDIR}
+        mason_substep "Using bash fallback for symlinking (GNU cp needed for faster symlinking)"
+        bash_lndir "${MASON_PREFIX}/" "${TARGET_SUBDIR}"
     fi
     mason_step "Done linking ${MASON_PREFIX}"
 }
@@ -411,7 +432,7 @@ function mason_link {
         exit 0
     fi
     TARGET_SUBDIR="${MASON_ROOT}/.link/"
-    mkdir -p ${TARGET_SUBDIR}
+    mkdir -p "${TARGET_SUBDIR}"
     run_lndir
 }
 
@@ -423,7 +444,7 @@ function mason_build {
     cd "${MASON_BUILD_PATH}"
     mason_prepare_compile
 
-    if [ ${MASON_PLATFORM} = 'ios' ]; then
+    if [ "${MASON_PLATFORM}" = 'ios' ]; then
 
         SIMULATOR_TARGETS="i386 x86_64"
         DEVICE_TARGETS="armv7 arm64"
@@ -436,8 +457,8 @@ function mason_build {
             cd "${MASON_BUILD_PATH}"
             mason_compile
             cd "${MASON_PREFIX}"
-            mv lib lib-isim-${ARCH}
-            for i in lib-isim-${ARCH}/*.a ; do lipo -info $i ; done
+            mv lib "lib-isim-${ARCH}"
+            for i in lib-isim-${ARCH}/*.a ; do lipo -info "$i" ; done
             LIB_FOLDERS="${LIB_FOLDERS} lib-isim-${ARCH}"
         done
 
@@ -459,11 +480,11 @@ function mason_build {
         mkdir -p lib
         for LIB in $(find ${LIB_FOLDERS} -name "*.a" | xargs basename | sort | uniq) ; do
             lipo -create $(find ${LIB_FOLDERS} -name "${LIB}") -output lib/${LIB}
-            lipo -info lib/${LIB}
+            lipo -info "lib/${LIB}"
         done
 
         cd "${MASON_PREFIX}"
-        rm -rf ${LIB_FOLDERS}
+        rm -rf "${LIB_FOLDERS}"
     elif [ ${MASON_PLATFORM} = 'android' ]; then
         cd "${MASON_BUILD_PATH}"
         mason_compile
@@ -506,13 +527,13 @@ function mason_config {
         echo "platform=${MASON_PLATFORM}"
         echo "platform_version=${MASON_PLATFORM_VERSION}"
     fi
+    mason_config_custom
     for name in include_dirs definitions options ldflags static_libs ; do
         eval value=\$MASON_CONFIG_$(echo ${name} | tr '[:lower:]' '[:upper:]')
         if [ ! -z "${value}" ]; then
-            echo ${name}=${value//${MASON_PREFIX}/${MASON_CONFIG_PREFIX}}
+            echo "${name}=${value//${MASON_PREFIX}/${MASON_CONFIG_PREFIX}}"
         fi
     done
-    mason_config_custom
 }
 
 function mason_write_config {
@@ -521,11 +542,11 @@ function mason_write_config {
     MASON_INI_DATA=$(set -e;mason_config)
     echo "${MASON_INI_DATA}" > "${INI_FILE}"
     mason_substep "Wrote configuration file ${INI_FILE}:"
-    cat ${INI_FILE}
+    cat "${INI_FILE}"
 }
 
 function mason_try_binary {
-    MASON_BINARIES_DIR=`dirname "${MASON_BINARIES}"`
+    MASON_BINARIES_DIR=$(dirname "${MASON_BINARIES}")
     mkdir -p "${MASON_ROOT}/.binaries/${MASON_BINARIES_DIR}"
     local FULL_URL="https://${MASON_BUCKET}.s3.amazonaws.com/${MASON_BINARIES}"
 
@@ -568,9 +589,9 @@ function mason_try_binary {
 
         # Try to force the ownership of the unpacked files
         # to the current user using fakeroot if available
-        `which fakeroot` tar xzf "${MASON_BINARIES_PATH}"
+        $(which fakeroot) tar xzf "${MASON_BINARIES_PATH}"
 
-        if [ ! -z ${MASON_PKGCONFIG_FILE:-} ] ; then
+        if [ ! -z "${MASON_PKGCONFIG_FILE:-}" ] ; then
             if [ -f "${MASON_PREFIX}/${MASON_PKGCONFIG_FILE}" ] ; then
             # Change the prefix
                 MASON_ESCAPED_PREFIX=$(echo "${MASON_PREFIX}" | sed -e 's/[\/&]/\\&/g')
@@ -590,7 +611,7 @@ function mason_pkgconfig {
     for pkgconfig_file in ${MASON_PKGCONFIG_FILE:-}; do
         MASON_PKGCONFIG_FILES="${MASON_PKGCONFIG_FILES} ${MASON_PREFIX}/${pkgconfig_file}"
     done
-    echo pkg-config ${MASON_PKGCONFIG_FILES}
+    echo pkg-config "${MASON_PKGCONFIG_FILES}"
 }
 
 function mason_cflags {
@@ -599,9 +620,9 @@ function mason_cflags {
         exit 1
     fi
     local FLAGS
-    FLAGS=$(set -e;`mason_pkgconfig` --static --cflags)
+    FLAGS=$(set -e;$(mason_pkgconfig) --static --cflags)
     # Replace double-prefix in case we use a sysroot.
-    echo ${FLAGS//${MASON_SYSROOT:-}${MASON_PREFIX}/${MASON_PREFIX}}
+    echo "${FLAGS//${MASON_SYSROOT:-}${MASON_PREFIX}/${MASON_PREFIX}}"
 }
 
 function mason_ldflags {
@@ -610,9 +631,9 @@ function mason_ldflags {
         exit 1
     fi
     local FLAGS
-    FLAGS=$(set -e;`mason_pkgconfig` --static --libs)
+    FLAGS=$(set -e;$(mason_pkgconfig) --static --libs)
     # Replace double-prefix in case we use a sysroot.
-    echo ${FLAGS//${MASON_SYSROOT:-}${MASON_PREFIX}/${MASON_PREFIX}}
+    echo "${FLAGS//${MASON_SYSROOT:-}${MASON_PREFIX}/${MASON_PREFIX}}"
 }
 
 function mason_static_libs {
@@ -627,41 +648,41 @@ function mason_static_libs {
 }
 
 function mason_prefix {
-    echo ${MASON_PREFIX}
+    echo "${MASON_PREFIX}"
 }
 
 function mason_version {
-    if [ ${MASON_SYSTEM_PACKAGE:-false} = true ]; then
+    if [ "${MASON_SYSTEM_PACKAGE:-false}" = true ]; then
         mason_system_version
     else
-        echo ${MASON_VERSION}
+        echo "${MASON_VERSION}"
     fi
 }
 
 function mason_list_existing_package {
     local PREFIX RESULT
     PREFIX=$1
-    RESULT=$(aws s3api head-object --bucket mason-binaries --key $PREFIX/$MASON_NAME/$MASON_VERSION.tar.gz 2>/dev/null)
+    RESULT=$(aws s3api head-object --bucket mason-binaries --key "$PREFIX/$MASON_NAME/$MASON_VERSION.tar.gz" 2>/dev/null)
     if [ ! -z "${RESULT}" ]; then
         printf "%-30s %6.1fM    %s\n" \
             "${PREFIX}" \
-            "$(bc -l <<< "$(echo ${RESULT} | jq -r .ContentLength) / 1000000")" \
-            "$(echo ${RESULT} | jq -r .LastModified)"
+            "$(bc -l <<< "$(echo "${RESULT}" | jq -r .ContentLength) / 1000000")" \
+            "$(echo "${RESULT}" | jq -r .LastModified)"
     else
         printf "%-30s %s\n" "${PREFIX}" "<missing>"
     fi
 }
 
 function mason_list_existing {
-    if [ ${MASON_SYSTEM_PACKAGE:-false} = true ]; then
+    if [ "${MASON_SYSTEM_PACKAGE:-false}" = true ]; then
         mason_error "System packages don't have published packages."
         exit 1
-    elif [ ${MASON_HEADER_ONLY:-false} = true ]; then
+    elif [ "${MASON_HEADER_ONLY:-false}" = true ]; then
         mason_list_existing_package headers
     else
         for PREFIX in $(jq -r .CommonPrefixes[].Prefix[0:-1] <<< "$(aws s3api list-objects --bucket=mason-binaries --delimiter=/)") ; do
-            if [ ${PREFIX} != "headers" -a ${PREFIX} != "prebuilt" ] ; then
-                mason_list_existing_package ${PREFIX}
+            if [ "${PREFIX}" != "headers" ] && [ "${PREFIX}" != "prebuilt" ] ; then
+                mason_list_existing_package "${PREFIX}"
             fi
         done
     fi
@@ -669,7 +690,7 @@ function mason_list_existing {
 
 function mason_publish {
     local CONTENT_TYPE DATE MD5 SIGNATURE
-    if [ ! ${MASON_HEADER_ONLY:-false} = true ] && [ ! -z ${MASON_LIB_FILE:-} ] && [ ! -f "${MASON_PREFIX}/${MASON_LIB_FILE}" ]; then
+    if [ ! "${MASON_HEADER_ONLY:-false}" = true ] && [ ! -z "${MASON_LIB_FILE:-}" ] && [ ! -f "${MASON_PREFIX}/${MASON_LIB_FILE}" ]; then
         mason_error "Required library file ${MASON_PREFIX}/${MASON_LIB_FILE} doesn't exist."
         exit 1
     fi
@@ -684,7 +705,7 @@ function mason_publish {
         exit 1
     fi
 
-    mkdir -p `dirname ${MASON_BINARIES_PATH}`
+    mkdir -p "$(dirname ${MASON_BINARIES_PATH})"
     cd "${MASON_PREFIX}"
     rm -rf "${MASON_BINARIES_PATH}"
     tar czf "${MASON_BINARIES_PATH}" .
@@ -696,15 +717,15 @@ function mason_publish {
     MD5="$(openssl md5 -binary < "${MASON_BINARIES_PATH}" | base64)"
     SIGNATURE="$(printf "PUT\n$MD5\n$CONTENT_TYPE\n$DATE\nx-amz-acl:public-read\n/${MASON_BUCKET}/${MASON_BINARIES}" | openssl sha1 -binary -hmac "$AWS_SECRET_ACCESS_KEY" | base64)"
 
-    curl -S -T "${MASON_BINARIES_PATH}" https://${MASON_BUCKET}.s3.amazonaws.com/${MASON_BINARIES} \
+    curl -S -T "${MASON_BINARIES_PATH}" "https://${MASON_BUCKET}.s3.amazonaws.com/${MASON_BINARIES}" \
         -H "Date: $DATE" \
         -H "Authorization: AWS $AWS_ACCESS_KEY_ID:$SIGNATURE" \
         -H "Content-Type: $CONTENT_TYPE" \
         -H "Content-MD5: $MD5" \
         -H "x-amz-acl: public-read"
 
-    echo https://${MASON_BUCKET}.s3.amazonaws.com/${MASON_BINARIES}
-    curl -f -I https://${MASON_BUCKET}.s3.amazonaws.com/${MASON_BINARIES}
+    echo "https://${MASON_BUCKET}.s3.amazonaws.com/${MASON_BINARIES}"
+    curl -f -I "https://${MASON_BUCKET}.s3.amazonaws.com/${MASON_BINARIES}"
 }
 
 function mason_copy_from_upstream {
@@ -714,7 +735,7 @@ function mason_copy_from_upstream {
 
 function mason_run {
     if [ "$1" == "install" ]; then
-        if [ ${MASON_SYSTEM_PACKAGE:-false} = true ]; then
+        if [ "${MASON_SYSTEM_PACKAGE:-false}" = true ]; then
             mason_check_existing
             mason_clear_existing
             mason_build

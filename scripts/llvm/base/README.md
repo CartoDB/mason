@@ -6,6 +6,8 @@ This readme documents:
  - Which sub-packages depend on the llvm package
  - How the llvm packages are built
  - How to create a new llvm package + sub-packages
+ - How to create a new _dev_ llvm package + sub-packages
+ - How to create a release package from a dev package (+ sub-packages)
  - How to use the binary packages
 
 ## What is llvm?
@@ -108,7 +110,7 @@ Top create new version of the llvm package and sub-packages do:
 First add the new package and sub-packages to git
 
 ```
-git add scripts/*/4.0.2/*
+git add scripts/*/4.0.2/
 ```
 
 Now push to github:
@@ -168,9 +170,31 @@ B. Run the docker image
 We run the docker image to build the package on linux. We map volumes such that the binary will end up on our host machine (to avoid needing to pass publishing credentials to docker).
 
 ```
+# first set up ccache sharing
+docker create -v $(pwd)/ccache:/ccache --name ccache mason-llvm
+
 LLVM_VERSION="4.0.2"
-docker run -it --volume $(pwd):/home/travis/build/mapbox/mason mason-llvm \
-  /bin/bash -c "./mason build llvm ${LLVM_VERSION} && ./utils/llvm.sh build ${LLVM_VERSION}"
+mkdir -p ccache
+time docker run -it \
+  -e CCACHE_DIR=/ccache \
+  -e LLVM_VERSION="${LLVM_VERSION}" \
+  --volumes-from ccache \
+  --volume $(pwd)/mason_packages/linux-x86_64:/home/travis/build/mapbox/mason/mason_packages/linux-x86_64 \
+  --volume $(pwd)/scripts:/home/travis/build/mapbox/mason/scripts \
+  mason-llvm \
+  bash
+```
+
+Then, inside the container run:
+
+```
+./mason build llvm ${LLVM_VERSION} && ./utils/llvm.sh build ${LLVM_VERSION}
+```
+
+Running interactively inside the container is recommended so that you can easily debug a failure. However if you would prefer to execute the commands all at once then pass this as the last argument to the `docker run` command:
+
+```
+/bin/bash -c "./mason build llvm ${LLVM_VERSION} && ./utils/llvm.sh build ${LLVM_VERSION}"
 ```
 
 C. Authenticate your shell with the mason AWS KEYS
@@ -188,6 +212,47 @@ MASON_PLATFORM=linux ./utils/llvm.sh publish 4.0.2
 ```
 
 Note: `MASON_PLATFORM=linux` is only needed if your host is OS X.
+
+#### Step 7: Test and Merge
+
+Once you publish, you should check the PR you created earlier to see if CI tests pass and run any other tests necessary to check your new package. Once tests have passed, merge your PR into master.
+
+You're done!
+
+## How to create a new dev llvm package + sub-packages
+
+#### Step 1: Create a mason branch
+
+`git checkout -b llvm-dev`
+
+#### Step 2: Create the new package
+
+Since a version number doesn't exist until LLVM makes a release, you should pick a version number that is one digit higher than the lastest release, e.g. if the latest release is 5.0.1, you would pick 6.0.0. Then create a new llvm package and sub-packages: 
+
+```
+./utils/llvm.sh create 6.0.0 5.0.1
+```
+
+#### Step 3: Override `setup_base_tools`
+
+- Edit the `script.sh` inside the directory of the new package you just created, e.g. from the example above `./scripts/llvm/6.0.0/script.sh`
+- Override the `setup_base_tools` function with something like this https://github.com/mapbox/mason/blob/libzip-1.5.1/scripts/llvm/7.0.0/script.sh#L12-L27. This is where you tell mason to grab LLVM directly from http://llvm.org/git/llvm.git. Note: You can also specify a gitsha with `get_llvm_project` and this is currently being considered to become the recommended way of getting a dev version of LLVM since it is reproducible and easier to debug later.
+
+#### Step 4: Follow Steps 5 and 7 above in the publishing a new package section
+
+Following steps 5 and 6 above cover:
+
+- Pushing your new package to github
+- Creating a PR
+- Building the new package
+- Publishing it
+- Merging your PR once CI tests pass
+
+Note: When building your package, e.g. `./mason build llvm 6.0.0`, mason will use the URLS you provided in the `setup_base_tools` override.
+
+## How to create a release package from a dev package (+ sub-packages)
+
+Currently this is a WIP, and making this easier to achieve is currently an issue with a documented work-around here: https://github.com/mapbox/mason/issues/578#issuecomment-383735380
 
 ## How to use the binary packages
 
