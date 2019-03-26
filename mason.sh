@@ -2,14 +2,9 @@ set -eu
 set -o pipefail
 # set -x
 
-<<<<<<< HEAD
 export MASON_ROOT=${MASON_ROOT:-`pwd`/mason_packages}
 MASON_BUCKET=${MASON_BUCKET:-mapnik-carto}
 MASON_UPSTREAM_BUCKET=${MASON_UPSTREAM_BUCKET:-mason-binaries}
-=======
-export MASON_ROOT=${MASON_ROOT:-$(pwd)/mason_packages}
-MASON_BUCKET=${MASON_BUCKET:-mason-binaries}
->>>>>>> blessed/master
 MASON_IGNORE_OSX_SDK=${MASON_IGNORE_OSX_SDK:-false}
 
 MASON_UNAME=$(uname -s)
@@ -117,7 +112,8 @@ elif [ "${MASON_PLATFORM}" = 'linux' ]; then
         export MASON_PLATFORM_VERSION=$(uname -m)
     fi
 
-    export CFLAGS="-fPIC"
+    # CARTO: Add debug information
+    export CFLAGS="-fPIC -g3 -gdwarf-4 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer"
     export LDFLAGS=""
     export CXXFLAGS="${CFLAGS} -std=c++11"
 
