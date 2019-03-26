@@ -53,17 +53,16 @@ function mason_prepare_compile {
     install cairo 1.14.8 libcairo
     install webp 0.6.0 libwebp
     install libgdal 2.1.3 libgdal
-    install boost 1.63.0
-    install boost_libsystem 1.63.0
-    install boost_libfilesystem 1.63.0
-    install boost_libprogram_options 1.63.0
-    install boost_libregex_icu57 1.63.0
+    install boost 1.65.1
+    install boost_libsystem 1.65.1
+    install boost_libfilesystem 1.65.1
+    install boost_libprogram_options 1.65.1
+    install boost_libregex_icu57 1.65.1
     install freetype 2.7.1 libfreetype
     install harfbuzz 1.4.2-ft libharfbuzz
 }
 
 function mason_compile {
-    #patch -N -p1 < ${MASON_DIR}/scripts/${MASON_NAME}/${MASON_VERSION}/patch.diff
     export PATH="${MASON_ROOT}/.link/bin:${PATH}"
     MASON_LINKED_REL="${MASON_ROOT}/.link"
     MASON_LINKED_ABS="${MASON_ROOT}/.link"
@@ -76,12 +75,22 @@ function mason_compile {
         echo "CUSTOM_CXXFLAGS = '${CXXFLAGS}'" >> config.py
     fi
 
+    # setup `mapnik-settings.env` (like bootstrap.sh does)
+    # note: we don't use bootstrap.sh to be able to control
+    # mason versions here and use the mason we are running
+    echo "export PROJ_LIB=${MASON_LINKED_ABS}/share/proj" > mapnik-settings.env
+    echo "export ICU_DATA=${MASON_LINKED_ABS}/share/icu/${ICU_VERSION}" >> mapnik-settings.env
+    echo "export GDAL_DATA=${MASON_LINKED_ABS}/share/gdal" >> mapnik-settings.env
+
+    RESULT=0
+
     ./configure \
         CXX="${CXX}" \
         CC="${CC}" \
         PREFIX="${MASON_PREFIX}" \
         RUNTIME_LINK="static" \
         INPUT_PLUGINS="all" \
+        ENABLE_GLIBC_WORKAROUND=True \
         ENABLE_SONAME=False \
         PKG_CONFIG_PATH="${MASON_LINKED_REL}/lib/pkgconfig" \
         PATH_REMOVE="/usr:/usr/local" \
@@ -119,9 +128,14 @@ function mason_compile {
         DEMO=False \
         XMLPARSER="ptree" \
         NO_ATEXIT=True \
-        SVG2PNG=True || cat ${MASON_BUILD_PATH}"/config.log"
+        SVG2PNG=True || RESULT=$?
 
-    cat config.py
+    # if configure failed, dump out config details before exiting
+    if [[ ${RESULT} != 0 ]]; then
+        cat ${MASON_BUILD_PATH}"/config.log"
+        cat config.py
+        false # then fail
+    fi
 
     # limit concurrency on travis to avoid heavy jobs being killed
     if [[ ${TRAVIS_OS_NAME:-} ]]; then
@@ -147,7 +161,7 @@ function mason_compile {
     fi
     # fix mapnik-config entries for deps
     HERE=$(pwd)
-    python -c "data=open('$MASON_PREFIX/bin/mapnik-config','r').read();open('$MASON_PREFIX/bin/mapnik-config','w').write(data.replace('$HERE','.').replace('${MASON_ROOT}','./mason_packages'))"
+    python -c "import re;data=open('$MASON_PREFIX/bin/mapnik-config','r').read();data=re.sub(r'-(isysroot)\s\/([0-9a-zA-Z_\/\-\.]+)', '', data);open('$MASON_PREFIX/bin/mapnik-config','w').write(data.replace('$HERE','.').replace('${MASON_ROOT}','./mason_packages'))"
     cat $MASON_PREFIX/bin/mapnik-config
 }
 
