@@ -1,5 +1,142 @@
 # Mason releases
 
+## 0.20.0
+
+- Added
+  - boost 1.67.0
+  - boost_libregex_icu58 1.66.0
+  - icu 58.1-brkitr (+ BreakIterator), 63.1-min-static-data-1
+  - libosmium 2.15.0
+  - osmium-tool 1.10.0
+  - postgres 10.3 (with libedit support)
+  - swiftshader 2018-10-08-3b5e426
+  - tippecanoe 1.32.10
+  - vector-tile 1.0.3
+
+- Changed
+  - alpine linux install compatibility fixes [c7ea656](https://github.com/mapbox/mason/commit/c7ea6566e6503e4b6c5e19cb53af08445c931687) [f6ab273](https://github.com/mapbox/mason/commit/f6ab273d30f210147a3f44e185f7959e65640f8d)
+  - harfbuzz 1.4.4 - clear environment before building ragel [#393](https://github.com/mapbox/mason/pull/393) h/t @edkimmel
+
+Changes: https://github.com/mapbox/mason/compare/v0.19.0...v0.20.0
+
+## 0.19.0
+
+- Added
+  - LICENSE.md
+  - apitrace 2018-05-16-7fadfba
+  - benchmark 1.4.1
+  - binutils 2.31
+  - build2 0.8.0
+  - catch 2.4.0
+  - clang++ 6.0.1
+  - clang-format 6.0.1
+  - clang-tidy 6.0.0, 6.0.1, 7.0.0
+  - crosstool-ng 1.23.0
+  - geojson 0.4.3
+  - geojsonvt 6.4.0, 6.5.0, 6.5.1, 6.6.0, 6.6.1, 6.6.2, 6.6.3
+  - geometry 0.9.3, 1.0.0
+  - glfw 2018-06-27-0be4f3f
+  - gtest 1.8.0_1
+  - gzip-hpp 0.1.0, a4cfa6a638de351d26834cf2fea373693cdaa927, bb80aac
+  - icu 63.1-min-static-data
+  - include-what-you-use 6.0.1
+  - jemalloc 39b1b20, 5.1.0
+  - jni.hpp 4.0.0, 4.0.1
+  - kcov 34, 894e98b
+  - kdbush 0.1.3
+  - libdeflate 1.0, e9d1014
+  - libosmium 2.14.0, 2.14.1, 2.14.2
+  - lldb 6.0.1
+  - llnode 1.7.1
+  - llvm-cov 6.0.1
+  - llvm 6.0.1
+  - lz4 1.8.2
+  - mapnik 3.0.19, 3.0.20, 3.0.21, 434511c, da69fdf66
+  - mbgl-core 20f880e
+  - node 6.14.3, 8.11.3
+  - nunicode 1.8
+  - osmium-tool 1.9.0, 1.9.1, 336eb45
+  - perf 4.15.15, 4.16
+  - protobuf 3.5.0, 3.5.1
+  - protozero 1.6.2, 1.6.3, 1.6.4
+  - sqlite 3.24.0-min-size
+  - supercluster 0.3.0, 0.3.2
+  - swiftshader 2018-05-31, 2018-06-29-539468c, 60f8662
+  - tippecanoe 1.27.14, 1.27.7, 1.27.9, 1.31.0
+  - valhalla 2.4.9
+  - vector-tile 1.0.2
+  - vtzero 088ec09, 1.0.0, 1.0.1, 1.0.2, 1.0.3, 2915725
+  - zlib-cloudflare e55212b
+  - zlib-ng 013b23b
+
+- Changed
+  - bzip2 1.0.6
+  - clang++ 6.0.0
+  - clang++ 7.0.0
+  - clang-format 6.0.0
+  - clang-format 7.0.0
+  - clang-tidy 6.0.0
+  - clang-tidy 7.0.0
+  - include-what-you-use 6.0.0
+  - include-what-you-use 7.0.0
+  - lldb 6.0.0
+  - lldb 7.0.0
+  - llvm-cov 6.0.0
+  - llvm-cov 7.0.0
+  - llvm 6.0.0
+  - llvm 7.0.0
+  - openssl 1.0.2d
+
+Changes: https://github.com/mapbox/mason/compare/v0.18.0...v0.19.0
+
+## 0.18.0
+
+- Added
+  - android-ndk r16b
+  - args 6.2.0
+  - bcc e6c7568
+  - benchmark 1.3.0, 1.3.0-cxx11abi
+  - binutils 2.30
+  - boost 1.66.0 (includes boost_libatomic, boost_libchrono, boost_libdate_time, boost_libfilesystem, boost_libiostreams, boost_libprogram_options, boost_libpython, boost_libregex, boost_libregex_icu, boost_libregex_icu57, boost_listsystem, boost_libtest, boost_libthread)
+  - build2 0.7.0-a.0.1517662481.a542a12b9195bb49
+  - gdal 2.2.3-1 (with geos enabled)
+  - jq 1.5-239278fd
+  - libcurl 7.50.2
+  - libedit 3.1
+  - libnghttp2 1.26.0
+  - llvm 7.0.0. 5.0.1 (includes clang++, clang-format, clang-tidy, include-what-you-use, llvm-cov)
+  - mapnik 3.0.18, 3.0.17, 3.0.16, a2f5969
+  - ncurses 6.1
+  - optional f27e7908
+  - osm-tag-rewriter 1.1.1
+  - perf 4.15
+  - protozero 1.6.1
+  - spatial-algorithms 0.1.0, cdda174
+  - tao_tuple 28626e99
+  - tippecanoe 1.27.6
+  - vector-tile 1.0.1, f4728da
+  - vtzero 533b811, f6efb8e, 7adde32
+  - wget 1.19.2
+
+- Changed
+  - Updated llvm documentation
+  - Updated download path for libpng 1.6.28
+  - Create .ccache directory in container to allow mapping volume
+  - Mason tests default to precise
+  - Various style fixes in mason.sh [#489](https://github.com/mapbox/mason/pull/489)
+  - Advances to llvm packaging [30c4647](https://github.com/mapbox/mason/commit/30c4647d0d80439d8b6017f519d13812a9fe986b)
+    - now building sanitized libc++ (asan, msan, and tsan)
+    - now building libc++/c++abi on all platforms
+    - still not installing libc++ on osx (to avoid conflicts with system)
+    - now ensuring we build using mason clang++
+    - upgraded build dependencies
+    - added support for building lldb against libedit and libncurses
+    - simplify and robustify package installs (no longer by default building iwyu)
+    - longer installing install-xcode-toolchain
+
+Changes: https://github.com/mapbox/mason/compare/v0.17.0...v0.18.0
+
+
 ## 0.17.0
 
 - Added
@@ -64,7 +201,7 @@
   - vtzero e651b70
   - vtzero fa6682b
 
-- Fixed 
+- Fixed
   - Improve Mason error handling https://github.com/mapbox/mason/commit/1727795f314dbef66fb0f84ee98a82a62e77b5d1
   - Fix Docker invocation https://github.com/mapbox/mason/commit/66817048a3f5613c14838920df237e781c7a4b99
   - PKG_CONFIG_PATH env var fix https://github.com/mapbox/mason/pull/493/files

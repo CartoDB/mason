@@ -18,6 +18,12 @@ function mason_load_source {
     export MASON_BUILD_PATH=${MASON_ROOT}/.build/postgresql-${MASON_VERSION2}
 }
 
+function mason_prepare_compile {
+    LIBEDIT_VERSION="3.1"
+    ${MASON_DIR}/mason install libedit ${LIBEDIT_VERSION}
+    MASON_LIBEDIT=$(${MASON_DIR}/mason prefix libedit ${LIBEDIT_VERSION})
+}
+
 function mason_compile {
     if [[ ${MASON_PLATFORM} == 'linux' ]]; then
         mason_step "Loading patch"
@@ -38,7 +44,8 @@ function mason_compile {
         --without-pam \
         --without-gssapi \
         --without-ossp-uuid \
-        --without-readline \
+        --with-readline \
+        --with-libedit-preferred \
         --without-ldap \
         --without-libxml \
         --without-libxslt \
