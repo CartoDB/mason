@@ -16,9 +16,9 @@ function mason_load_source {
 
     if [[ ! -d ${MASON_BUILD_PATH} ]]; then
         mason_step "Cloning source..."
-        git clone -b v${MASON_VERSION} --depth 1 --single-branch http://github.com/CartoDB/mapnik ${MASON_BUILD_PATH}
+        git clone -b v${MASON_VERSION} --single-branch http://github.com/CartoDB/mapnik ${MASON_BUILD_PATH}
         mason_step "Cloning submodules..."
-        (cd ${MASON_BUILD_PATH}; git submodule update --init --depth 1)
+        (cd ${MASON_BUILD_PATH}; git submodule update --init)
     fi
 }
 
