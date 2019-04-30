@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 MASON_NAME=libpq
-MASON_VERSION=10.3
+MASON_VERSION=10.7
 MASON_LIB_FILE=lib/libpq.a
 MASON_PKGCONFIG_FILE=lib/pkgconfig/libpq.pc
 
@@ -10,7 +10,7 @@ MASON_PKGCONFIG_FILE=lib/pkgconfig/libpq.pc
 function mason_load_source {
     mason_download \
         http://ftp.postgresql.org/pub/source/v${MASON_VERSION}/postgresql-${MASON_VERSION}.tar.bz2 \
-        e1590a4b2167dcdf164eb887cf83e7da9e155771
+        0c0567656ada447115a020946cc6597046f5e7f3
 
     mason_extract_tar_bz2
 
