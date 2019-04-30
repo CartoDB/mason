@@ -33,7 +33,7 @@ function mason_prepare_compile {
     LIBTIFF_VERSION="4.0.8"
     PROJ_VERSION="4.9.3"
     JPEG_VERSION="1.5.2"
-    PNG_VERSION="1.6.32"
+    PNG_VERSION="1.6.37"
     EXPAT_VERSION="2.2.0"
     POSTGRES_VERSION="10.7"
     SQLITE_VERSION="3.21.0"
