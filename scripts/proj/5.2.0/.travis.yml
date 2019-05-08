@@ -9,6 +9,9 @@ matrix:
       compiler: clang
       sudo: false
 
+before_install:
+- if [ $TRAVIS_OS_NAME = linux ]; then sudo apt-get install -y automake pkg-config libtool; fi
+
 script:
 - ./mason build ${MASON_NAME} ${MASON_VERSION}
 - ./mason publish ${MASON_NAME} ${MASON_VERSION}
