@@ -31,7 +31,7 @@ function mason_prepare_compile {
     REPLACE="$(pwd)"
     REPLACE=${REPLACE////\\/}
     LIBTIFF_VERSION="4.0.8"
-    PROJ_VERSION="4.9.3"
+    PROJ_VERSION="5.2.0"
     JPEG_VERSION="1.5.2"
     PNG_VERSION="1.6.37"
     EXPAT_VERSION="2.2.0"
