@@ -59,6 +59,7 @@ check-local: pj_phi2_test-check proj_errno_string_test-check
 ' > test/unit/Makefile.am
 
     # note CFLAGS overrides defaults (-g -O2) so we need to add optimization flags back
+    ./autogen.sh
     export CFLAGS="${CFLAGS} -O3 -DNDEBUG"
     ./configure --prefix=${MASON_PREFIX} \
     --without-mutex ${MASON_HOST_ARG} \
