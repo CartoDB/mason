@@ -9,12 +9,12 @@ GRID_VERSION="1.8"
 
 function mason_load_source {
     mason_download \
-        http://download.osgeo.org/proj/proj-${MASON_VERSION}.tar.gz \
-        b69905598b38339f917a3ab28f9d6a939ea986cd
+        https://github.com/OSGeo/proj.4/archive/${MASON_VERSION}.tar.gz \
+        6a033aefe0002bb7b1950b762211049075cfbf77
 
     mason_extract_tar_gz
 
-    export MASON_BUILD_PATH=${MASON_ROOT}/.build/${MASON_NAME}-${MASON_VERSION}
+    export MASON_BUILD_PATH=${MASON_ROOT}/.build/${MASON_NAME}.4-${MASON_VERSION}
 }
 
 function mason_compile {
