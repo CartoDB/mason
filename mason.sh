@@ -61,7 +61,7 @@ if [ "${MASON_PLATFORM}" = 'osx' ]; then
             export MASON_DYNLIB_SUFFIX="dylib"
         fi
 
-        MIN_SDK_VERSION_FLAG="-mmacosx-version-min=10.8"
+        MIN_SDK_VERSION_FLAG="-mmacosx-version-min=10.9"
         SYSROOT_FLAGS="-isysroot ${MASON_SDK_PATH} -arch x86_64 ${MIN_SDK_VERSION_FLAG}"
         export CFLAGS="${SYSROOT_FLAGS}"
         export CXXFLAGS="${CFLAGS} -fvisibility-inlines-hidden -stdlib=libc++ -std=c++11"

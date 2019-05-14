@@ -53,6 +53,8 @@ function mason_prepare_compile {
     install pixman 0.34.0 libpixman-1
     install cairo 1.14.12 libcairo
     install webp 0.6.0 libwebp
+    # Install geos to be able to statically link gdal
+    install geos 3.6.2
     install gdal 2.4.1 libgdal
     install boost 1.65.1
     install boost_libsystem 1.65.1
